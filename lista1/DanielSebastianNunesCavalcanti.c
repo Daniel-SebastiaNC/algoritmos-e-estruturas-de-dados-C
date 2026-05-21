@@ -1,4 +1,5 @@
 //1. Troca de valores sem variável auxiliar
+
 /*
 
 #include <stdio.h>
@@ -165,7 +166,61 @@ int main() {
 
 /*
 
-Cole aqui a sua resposta
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+typedef struct {
+    char nome[100];
+    float nota;
+} Aluno;
+
+int main() {
+    
+    int quant;
+    
+    printf("Digite a quantidade de alunos: ");
+    scanf("%d", &quant);
+    getchar();
+    
+    Aluno *alunos = (Aluno *) malloc(quant * sizeof(Aluno));
+
+    if (alunos == NULL) {
+        printf("Erro de falta de memória!\n");
+        return 0; 
+    }
+
+    int indiceMaior = 0;
+    float maiorNota = -1; 
+
+    for (int i = 0; i < quant; i++) {
+        printf("Cadastro Aluno %d\n", i + 1);
+        
+        printf("Nome: ");
+        fgets(alunos[i].nome, sizeof(alunos[i].nome), stdin);
+        alunos[i].nome[strcspn(alunos[i].nome, "\n")] = '\0';
+
+        printf("Nota: ");
+        scanf("%f", &alunos[i].nota);
+        
+        getchar();
+
+        if (alunos[i].nota > maiorNota) {
+            maiorNota = alunos[i].nota;
+            indiceMaior = i;
+        }
+    }
+
+    if (quant > 0) {
+        printf("Aluno com a Maior Nota\n");
+        printf("Nome: %s\n", alunos[indiceMaior].nome);
+        printf("Nota: %.2f\n", alunos[indiceMaior].nota);
+    }
+
+    free(alunos);
+
+    return 0;
+}
 
 */
 
@@ -174,7 +229,22 @@ Cole aqui a sua resposta
 
 /*
 
-Cole aqui a sua resposta
+#include <stdio.h>
+ 
+int main() {
+
+    int a;
+    int b;
+
+    scanf("%d", &a);
+    scanf("%d", &b);
+
+    int soma = a +b;
+
+    printf("SOMA = %d\n", soma);
+
+    return 0;
+}
 
 */
 
@@ -182,7 +252,23 @@ Cole aqui a sua resposta
 
 /*
 
-Cole aqui a sua resposta
+#include <stdio.h>
+
+int main() {
+    char nome[20];
+    double salario;
+    double vendas;
+    
+    scanf("%s", nome);
+    
+    scanf("%lf", &salario);
+    scanf("%lf", &vendas);
+    
+    double total = salario + (0.15 * vendas);
+    
+    printf("TOTAL = R$ %.2lf\n", total);
+    return 0;
+}
 
 */
 
@@ -190,7 +276,24 @@ Cole aqui a sua resposta
 
 /*
 
-Cole aqui a sua resposta
+#include <stdio.h>
+ 
+int main() {
+ 
+    int tempo;
+    int velocidade;
+    
+    scanf("%d", &tempo);
+    scanf("%d", &velocidade);
+    
+    int distancia = tempo * velocidade;
+    
+    float combustivel =  ((float) distancia)/12;
+    
+    printf("%.3f\n", combustivel);
+    
+    return 0;
+}
 
 */
 
@@ -198,7 +301,49 @@ Cole aqui a sua resposta
 
 /*
 
-Cole aqui a sua resposta
+#include <stdio.h>
+ 
+int main() {
+ 
+    int valor;
+   
+    
+    scanf("%d", &valor);
+    
+    printf("%d\n", valor);
+    
+    int notas100 = valor/100;
+    valor -= notas100 * 100;
+    
+    int notas50 = valor/50;
+    valor -= notas50 * 50;
+    
+    int notas20 = valor/20;
+    valor -= notas20 * 20;
+    
+    int notas10 = valor/10;
+    valor -= notas10 * 10;
+    
+     int notas5 = valor/5;
+    valor -= notas5 * 5;
+    
+    int notas2 = valor/2;
+    valor -= notas2 * 2;
+    
+    int notas1 = valor/1;
+    valor -= notas1 * 1;
+    
+    printf("%d nota(s) de R$ 100,00\n", notas100);
+    printf("%d nota(s) de R$ 50,00\n", notas50);
+    printf("%d nota(s) de R$ 20,00\n", notas20);
+    printf("%d nota(s) de R$ 10,00\n", notas10);
+    printf("%d nota(s) de R$ 5,00\n", notas5);
+    printf("%d nota(s) de R$ 2,00\n", notas2);
+    printf("%d nota(s) de R$ 1,00\n", notas1);
+    
+    return 0;
+    
+}
 
 */
 
@@ -206,7 +351,25 @@ Cole aqui a sua resposta
 
 /*
 
-Cole aqui a sua resposta
+#include <stdio.h>
+ 
+int main() {
+ 
+    float vetor[100];
+    
+    for (int i = 0; i < 100; i++) {
+        scanf("%f", &vetor[i]);
+    }
+    
+    for (int i = 0; i < 100; i++) {
+        if (vetor[i] <= 10)
+            printf("A[%d] = %.1f\n",i,  vetor[i]);
+    }
+    
+    
+    return 0;
+    
+}
 
 */
 
@@ -214,7 +377,37 @@ Cole aqui a sua resposta
 
 /*
 
-Cole aqui a sua resposta
+#include <stdio.h>
+#include <string.h>
+ 
+int main() {
+    
+    int casos;
+    
+    scanf("%d", &casos);
+    
+    for (int j = 0; j < casos; j++) {
+        int n;
+        char mensagem[51];
+        
+        scanf("%s", mensagem);
+        scanf("%d", &n);
+        
+        for (int i = 0; i < strlen(mensagem); i++) {
+            int cn = ((int) mensagem[i]) - n;
+            if (cn < 65) {
+                cn = cn + 26;
+            }
+            
+            char c = (char) cn;
+            printf("%c", c);
+        }
+        printf("\n");
+    }
+    
+    return 0;
+    
+}
 
 */
 
