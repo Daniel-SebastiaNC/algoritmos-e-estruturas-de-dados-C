@@ -12,6 +12,7 @@ typedef struct {
 
 typedef struct No {
     struct No *proximo;
+    struct No *anterior;
     Aluno dado;
 } No;
 
@@ -47,13 +48,16 @@ int inserirNoInicio(Lista *lista, Aluno aluno) {
 
     novo->dado = aluno;
     novo->proximo = lista->inicio;
-
-    lista->inicio = novo;
-
+    novo->anterior = NULL;
+    
+    
     if (lista->tamanho == 0) {
         lista->fim = novo;
+    } else {
+        lista->inicio->anterior = novo;
     }
 
+    lista->inicio = novo;
     lista->tamanho++;
 
     return 1;
@@ -68,12 +72,14 @@ int inserirNoFinal(Lista *lista, Aluno aluno) {
 
     novo->dado = aluno;
     novo->proximo = NULL;
+    novo->anterior = NULL;
 
     if (lista->tamanho == 0) {
         lista->inicio = novo;
         lista->fim = novo;
     } else {
         lista->fim->proximo = novo;
+        novo->anterior = lista->fim;
         lista->fim = novo;
     }
 
@@ -82,21 +88,7 @@ int inserirNoFinal(Lista *lista, Aluno aluno) {
     return 1;
 }
 
-No* obterNoAnterior(Lista *lista, int posicao) {
-    if(posicao <= 0 || posicao > lista->tamanho)
-        return NULL;
-    
-    No *atual = lista->inicio;
-
-    for (int i = 0; i < posicao - 1; i++) {
-        atual = atual->proximo;
-    }
-
-    return atual;
-}
-
 int inserirEmPosicao(Lista *lista, Aluno aluno, int posicao) {
-
     if(posicao < 0 || posicao > lista->tamanho)
         return 0;
     
@@ -110,43 +102,39 @@ int inserirEmPosicao(Lista *lista, Aluno aluno, int posicao) {
         return 1;
     }
 
-    No *anterior = obterNoAnterior(lista, posicao);
-    if (anterior == NULL) {
-        return 0;
+    No *atual = lista->inicio;
+    for (int i = 0; i < posicao; i++) {
+        atual = atual->proximo;
     }
 
+    No *anterior = atual->anterior;
     No *novo = malloc(sizeof(No));
-    if(novo == NULL) {
-        return 0;
-    }
+    if(novo == NULL) return 0;
 
     novo->dado = aluno;
-
-    novo->proximo = anterior->proximo;
+    novo->proximo = atual;
+    novo->anterior = anterior; 
     anterior->proximo = novo;
+    atual->anterior = novo;     
 
     lista->tamanho++;
-
     return 1;
 }
 
 int removerNoInicio(Lista *lista) {
-
-    if (lista->inicio == NULL) {
-        return 0;
-    }
+    if (lista->inicio == NULL) return 0;
 
     No *remover = lista->inicio;
-
     lista->inicio = remover->proximo;
 
-    if (lista->inicio == NULL) {
+    if (lista->inicio != NULL) {  
+        lista->inicio->anterior = NULL;
+    } else {
         lista->fim = NULL;
     }
 
     free(remover);
     lista->tamanho--;
-
     return 1;
 }
 
@@ -163,7 +151,14 @@ int removerNoFinal(Lista *lista) {
         return 1;
     }
 
-    No *anterior = obterNoAnterior(lista, lista->tamanho-1);
+    No *atual = lista->inicio;
+
+    for (int i = 0; i < lista->tamanho-1; i++) {
+        atual = atual->proximo;
+    }
+
+    No *anterior = atual->anterior;
+
     No *remover = lista->fim;
 
     anterior->proximo = NULL; 
@@ -190,14 +185,19 @@ int removerEmPosicao(Lista *lista, int posicao) {
         return 1;
     }
 
-    No *anterior = obterNoAnterior(lista, posicao);
+    No *atual = lista->inicio;
 
-    No *remover = anterior->proximo;
+    for (int i = 0; i < posicao; i++) {
+        atual = atual->proximo;
+    }
 
-    anterior->proximo = remover->proximo;
+    No *anterior = atual->anterior;
 
-    free(remover);
+    anterior->proximo = atual->proximo;
+    atual->proximo->anterior = anterior;
 
+    free(atual);
+    
     lista->tamanho--;
     return 1;
 }
@@ -232,7 +232,13 @@ Aluno recuperarPorPosicao(Lista *lista, int posicao) {
         return alunoReturn;
     }
 
-    alunoReturn = obterNoAnterior(lista, posicao)->proximo->dado;
+    No *atual = lista->inicio;
+
+    for (int i = 0; i < posicao; i++) {
+        atual = atual->proximo;
+    }
+
+    alunoReturn = atual->dado;
 
     return alunoReturn;
 }

@@ -108,7 +108,7 @@ int inserirEmPosicao(Lista *lista, Aluno aluno, int posicao) {
     return 1;
 }
 
-int removerirNoInicio(Lista *lista) {
+int removerNoInicio(Lista *lista) {
     for (int i = 0; i < lista->tamanho ;i++) {
         lista->dados[i] = lista->dados[i+1];
     }
@@ -128,7 +128,7 @@ int removerEmPosicao(Lista *lista, int posicao) {
     }
 
     if (posicao == 0) {
-        removerirNoInicio(lista);
+        removerNoInicio(lista);
         return 1;
     }
 
@@ -209,7 +209,7 @@ int main() {
     inserirEmPosicao(&lista, aluno4, 1);
     imprimirLista(&lista);
 
-    removerirNoInicio(&lista);
+    removerNoInicio(&lista);
     imprimirLista(&lista);
 
     removerNoFinal(&lista);
