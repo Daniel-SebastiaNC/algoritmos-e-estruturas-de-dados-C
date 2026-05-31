@@ -123,7 +123,7 @@ int removerNoFinal(Lista *lista) {
 }
 
 int removerEmPosicao(Lista *lista, int posicao) {
-    if (posicao > lista->tamanho || posicao < 0) {
+    if (posicao >= lista->tamanho || posicao < 0) {
         return 0;
     }
 

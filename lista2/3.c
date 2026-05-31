@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-
-#define MAX 20
+#include <stdlib.h>
 
 typedef struct {
     int id;
@@ -11,90 +10,174 @@ typedef struct {
     char cpf[20];
 } Aluno;
 
+typedef struct No {
+    struct No *proximo;
+    Aluno dado;
+} No;
+
 typedef struct {
     int tamanho;
-    Aluno dados[MAX];
+    No *inicio;
+    No *fim;
 } Lista;
 
 void inicializarLista(Lista *lista) {
     lista->tamanho = 0;
+    lista->inicio = NULL;
+    lista->fim = NULL;
 }
 
 void imprimirLista(Lista *lista) {
     printf("Show:\n");
-    for (int i = 0; i < lista->tamanho; i++) {
-        Aluno aluno = lista->dados[i];
-        printf("ID: %d, Nome: %s, Matricula: %s, Idade: %d, CPF: %s\n", aluno.id, aluno.nome, aluno.matricula, aluno.idade, aluno.cpf);
+    No *atual = lista->inicio;
+
+    int cont = 0;
+    while (atual != NULL) {
+        printf("indice = %d | nome = %s | idade = %d\n",
+            cont,
+            atual->dado.nome,
+            atual->dado.idade
+        );
+
+        cont++;
+        atual = atual->proximo;
     }
 }
 
 int inserirNoInicio(Lista *lista, Aluno aluno) {
-    if (lista->tamanho >= MAX) {
+    No *novo = malloc(sizeof(No));
+
+    if(novo == NULL) {
         return 0;
     }
 
-    if (lista->tamanho != 0) {
-        for (int i = lista->tamanho; i > 0; i--) {
-            lista->dados[i] = lista->dados[i-1];
-        }
+    novo->dado = aluno;
+    novo->proximo = lista->inicio;
+
+    lista->inicio = novo;
+
+    if (lista->tamanho == 0) {
+        lista->fim = novo;
     }
 
-    lista->dados[0] = aluno;
     lista->tamanho++;
 
     return 1;
 }
 
 int inserirNoFinal(Lista *lista, Aluno aluno) {
-    if (lista->tamanho >= MAX) {
+    No *novo = malloc(sizeof(No));
+
+    if(novo == NULL) {
         return 0;
     }
 
-    lista->dados[lista->tamanho] = aluno;
+    novo->dado = aluno;
+    novo->proximo = NULL;
+
+    if (lista->tamanho == 0) {
+        lista->inicio = novo;
+        lista->fim = novo;
+    } else {
+        lista->fim->proximo = novo;
+        lista->fim = novo;
+    }
+
     lista->tamanho++;
 
     return 1;
 }
 
+No* obterNoAnterior(Lista *lista, int posicao) {
+    if(posicao <= 0 || posicao > lista->tamanho)
+        return NULL;
+    
+    No *atual = lista->inicio;
+
+    for (int i = 0; i < posicao - 1; i++) {
+        atual = atual->proximo;
+    }
+
+    return atual;
+}
+
 int inserirEmPosicao(Lista *lista, Aluno aluno, int posicao) {
-    if (lista->tamanho >= MAX) {
-        return 0;
-    }
 
-    if (posicao > lista->tamanho || posicao < 0) {
+    if(posicao < 0 || posicao > lista->tamanho)
         return 0;
+    
+    if (posicao == 0) {
+        inserirNoInicio(lista, aluno);
+        return 1;
     }
-
+    
     if (posicao == lista->tamanho) {
         inserirNoFinal(lista, aluno);
         return 1;
     }
 
-    if (posicao == 0) {
-        inserirNoInicio(lista, aluno);
-        return 1;
+    No *anterior = obterNoAnterior(lista, posicao);
+    if (anterior == NULL) {
+        return 0;
     }
 
-    for (int i = lista->tamanho; i > posicao; i --) {
-        lista->dados[i] = lista->dados[i-1];
+    No *novo = malloc(sizeof(No));
+    if(novo == NULL) {
+        return 0;
     }
 
-    lista->dados[posicao] = aluno;
+    novo->dado = aluno;
+
+    novo->proximo = anterior->proximo;
+    anterior->proximo = novo;
+
     lista->tamanho++;
+
     return 1;
 }
 
 int removerirNoInicio(Lista *lista) {
-    for (int i = 0; i < lista->tamanho ;i++) {
-        lista->dados[i] = lista->dados[i+1];
+
+    if (lista->inicio == NULL) {
+        return 0;
     }
 
+    No *remover = lista->inicio;
+
+    lista->inicio = remover->proximo;
+
+    if (lista->inicio == NULL) {
+        lista->fim = NULL;
+    }
+
+    free(remover);
     lista->tamanho--;
+
     return 1;
 }
 
 int removerNoFinal(Lista *lista) {
+    if (lista->inicio == NULL) {
+        return 0;
+    }
+
+    if (lista->inicio == lista->fim) {
+        free(lista->inicio);
+        lista->inicio = NULL;
+        lista->fim = NULL;
+        lista->tamanho--;
+        return 1;
+    }
+
+    No *anterior = obterNoAnterior(lista, lista->tamanho-1);
+    No *remover = lista->fim;
+
+    anterior->proximo = NULL; 
+    lista->fim = anterior;
+
+    free(remover);
     lista->tamanho--;
+
     return 1;
 }
 
@@ -113,9 +196,13 @@ int removerEmPosicao(Lista *lista, int posicao) {
         return 1;
     }
 
-    for (int i = posicao; i < lista->tamanho; i++) {
-        lista->dados[i] = lista->dados[i+1];
-    }
+    No *anterior = obterNoAnterior(lista, posicao);
+
+    No *remover = anterior->proximo;
+
+    anterior->proximo = remover->proximo;
+
+    free(remover);
 
     lista->tamanho--;
     return 1;
@@ -132,10 +219,14 @@ int estaVazia(Lista *lista) {
 }
 
 int contemAluno(Lista *lista, char cpf[]) {
-    for (int i = 0; i < lista->tamanho; i++) {
-        if (strcmp(lista->dados[i].cpf, cpf) == 0) {
+    No *atual = lista->inicio;
+
+    while (atual != NULL) {
+        if (strcmp(atual->dado.cpf, cpf) == 0) {
             return 1;
         }
+
+        atual = atual->proximo;
     }
 
     return 0;
@@ -147,13 +238,27 @@ Aluno recuperarPorPosicao(Lista *lista, int posicao) {
         return alunoReturn;
     }
 
-    alunoReturn = lista->dados[posicao];
+    alunoReturn = obterNoAnterior(lista, posicao)->proximo->dado;
 
     return alunoReturn;
 }
 
 int limparLista(Lista *lista) {
+    No *atual = lista->inicio;
+
+    while (atual != NULL) {
+        No *remover = atual;
+
+        atual = atual->proximo;
+
+        free(remover);
+    }
+
     lista->tamanho = 0;
+    lista->inicio = NULL;
+    lista->fim = NULL;
+
+    return 1;
 }
 
 int main() {
