@@ -18,16 +18,16 @@ typedef struct No {
 typedef struct {
     int tamanho;
     No *topo;
-} Fila;
+} Pilha;
 
-void inicializarFila(Fila *Fila) {
-    Fila->tamanho = 0;
-    Fila->topo = NULL;
+void inicializarpilha(Pilha *Pilha) {
+    Pilha->tamanho = 0;
+    Pilha->topo = NULL;
 }
 
-void imprimirFila(Fila *Fila) {
+void imprimirpilha(Pilha *Pilha) {
     printf("Show:\n");
-    No *atual = Fila->topo;
+    No *atual = Pilha->topo;
 
     while (atual != NULL) {
         Aluno aluno = atual->dado;
@@ -36,7 +36,7 @@ void imprimirFila(Fila *Fila) {
     }
 }
 
-void push(Fila *Fila, Aluno aluno) {
+void push(Pilha *Pilha, Aluno aluno) {
    No *novo = malloc(sizeof(No));
 
     if(novo == NULL) {
@@ -44,46 +44,46 @@ void push(Fila *Fila, Aluno aluno) {
     }
 
     novo->dado = aluno;
-    novo->proximo = Fila->topo;
+    novo->proximo = Pilha->topo;
 
-    Fila->topo = novo;
+    Pilha->topo = novo;
 
-    Fila->tamanho++;
+    Pilha->tamanho++;
 }
 
-Aluno pop(Fila *Fila) {
+Aluno pop(Pilha *Pilha) {
     Aluno aluno = {};
-    if (Fila->topo == NULL) {
+    if (Pilha->topo == NULL) {
         return aluno;
     }
 
-    No *remover = Fila->topo;
+    No *remover = Pilha->topo;
 
-    Fila->topo = remover->proximo;
+    Pilha->topo = remover->proximo;
 
     aluno = remover->dado;
     free(remover);
-    Fila->tamanho--;
+    Pilha->tamanho--;
 
     return aluno;
 }
 
-Aluno peak(Fila *Fila) {
-    return Fila->topo->dado;
+Aluno peak(Pilha *Pilha) {
+    return Pilha->topo->dado;
 }
 
-int size(Fila *Fila) {
-    return Fila->tamanho;
+int size(Pilha *Pilha) {
+    return Pilha->tamanho;
 }
 
-int isEmpty(Fila *Fila) {
-    if (Fila->tamanho == 0) 
+int isEmpty(Pilha *Pilha) {
+    if (Pilha->tamanho == 0) 
         return 1;
     return 0;
 }
 
-int clear(Fila *Fila) {
-    No *atual = Fila->topo;
+int clear(Pilha *Pilha) {
+    No *atual = Pilha->topo;
 
     while (atual != NULL) {
         No *remover = atual;
@@ -93,20 +93,20 @@ int clear(Fila *Fila) {
         free(remover);
     }
 
-    Fila->tamanho = 0;
-    Fila->topo = NULL;
+    Pilha->tamanho = 0;
+    Pilha->topo = NULL;
 
     return 1;
 }
 
 int main() {
-    Fila Fila;
-    inicializarFila(&Fila);
+    Pilha Pilha;
+    inicializarpilha(&Pilha);
 
-    if (isEmpty(&Fila)) {
-        printf("A Fila esta vazia\n");
+    if (isEmpty(&Pilha)) {
+        printf("A Pilha esta vazia\n");
     } else {
-        printf("A Fila nao esta vazia\n");
+        printf("A Pilha nao esta vazia\n");
     }
 
     Aluno aluno1 = {1, "Daniel", "0001", 20, "00000000"};
@@ -116,36 +116,36 @@ int main() {
     Aluno aluno5 = {5, "Guilherme", "0005", 20, "44444444"};
     Aluno aluno6 = {6, "Mariana", "0006", 23, "55555555"};
     
-    push(&Fila, aluno1);
+    push(&Pilha, aluno1);
 
-    if (isEmpty(&Fila)) {
-        printf("A Fila esta vazia\n");
+    if (isEmpty(&Pilha)) {
+        printf("A Pilha esta vazia\n");
     } else {
-        printf("A Fila nao esta vazia\n");
+        printf("A Pilha nao esta vazia\n");
     }
 
-    push(&Fila, aluno2);
-    push(&Fila, aluno3);
+    push(&Pilha, aluno2);
+    push(&Pilha, aluno3);
 
-    imprimirFila(&Fila);
+    imprimirpilha(&Pilha);
 
-    Aluno aluno = pop(&Fila);
+    Aluno aluno = pop(&Pilha);
 
     printf("Aluno que foi atendido: \n");
     printf("ID: %d, Nome: %s, Matricula: %s, Idade: %d, CPF: %s\n", aluno.id, aluno.nome, aluno.matricula, aluno.idade, aluno.cpf);
 
-    imprimirFila(&Fila);
-    printf("Tamanho da fila: %d\n", size(&Fila));
+    imprimirpilha(&Pilha);
+    printf("Tamanho da Pilha: %d\n", size(&Pilha));
 
     printf("Proximo Aluno: \n");
-    aluno = peak(&Fila);
+    aluno = peak(&Pilha);
 
     printf("ID: %d, Nome: %s, Matricula: %s, Idade: %d, CPF: %s\n", aluno.id, aluno.nome, aluno.matricula, aluno.idade, aluno.cpf);
 
-    clear(&Fila);
+    clear(&Pilha);
 
-    printf("Tamanho da fila: %d\n", size(&Fila));
-    imprimirFila(&Fila);
+    printf("Tamanho da Pilha: %d\n", size(&Pilha));
+    imprimirpilha(&Pilha);
 
     return 0;
 }
